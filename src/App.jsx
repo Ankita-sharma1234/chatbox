@@ -10,7 +10,8 @@ import {
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
 
-const API_KEY =""
+const OPENAI_API_KEY = "";
+
 const systemMessage = {
   role: "system",
   content:
@@ -54,21 +55,24 @@ function App() {
     });
 
     const apiRequestBody = {
-      model: "claude-v1",
+      model: "gpt-3.5-turbo",
       prompt: [systemMessage, ...apiMessages]
         .map((msg) => msg.content)
         .join("\n\n"),
     };
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "x-api-key": API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(apiRequestBody),
-      });
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(apiRequestBody),
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -97,27 +101,27 @@ function App() {
 
   return (
     <div className="App">
-    <div style={{ position: "relative", height: "800px", width: "700px" }}>
-      <MainContainer>
-        <ChatContainer>
-          <MessageList
-            scrollBehavior="smooth"
-            typingIndicator={
-              isTyping ? (
-                <TypingIndicator content="ChatGPT is typing" />
-              ) : null
-            }
-          >
-            {messages.map((message, i) => {
-              console.log(message);
-              return <Message key={i} model={message} />;
-            })}
-          </MessageList>
-          <MessageInput placeholder="Type message here" onSend={handleSend} />
-        </ChatContainer>
-      </MainContainer>
+      <div style={{ position: "relative", height: "650px", width: "700px" }}>
+        <MainContainer>
+          <ChatContainer>
+            <MessageList
+              scrollBehavior="smooth"
+              typingIndicator={
+                isTyping ? (
+                  <TypingIndicator content="ChatGPT is typing" />
+                ) : null
+              }
+            >
+              {messages.map((message, i) => {
+                console.log(message);
+                return <Message key={i} model={message} />;
+              })}
+            </MessageList>
+            <MessageInput placeholder="Type message here" onSend={handleSend} />
+          </ChatContainer>
+        </MainContainer>
+      </div>
     </div>
-  </div>
   );
 }
 
